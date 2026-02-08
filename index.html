@@ -213,45 +213,55 @@ function checkDate(day, month, message, images, isValentine=false){
 }
 
 
-function showWish(message, images, isValentine=false){
+function showWish(message, images, isValentine = false) {
     wishMessage.innerText = message;
     surprises.innerHTML = "";
 
-    images.forEach((img, index)=>{
+    // 📅 today key (unique per day)
+    const todayKey = "chosenGift_" + new Date().toDateString();
+
+    images.forEach((img) => {
         let box = document.createElement("div");
-        box.style.display="inline-block";
-        box.style.margin="10px";
-        box.style.cursor="pointer";
+        box.style.display = "inline-block";
+        box.style.margin = "10px";
+        box.style.cursor = "pointer";
+
         box.innerHTML = `<img src="images/gift.jpg" width="100">`;
 
-        box.onclick = function(){
-            // check if already chosen
-           if(localStorage.getItem("chosenGift") && !DEV_MODE){
+        box.onclick = function () {
 
-                alert("You already opened one surprise for this day 💝");
+            // 🔒 check only for TODAY
+            if (localStorage.getItem(todayKey) && !DEV_MODE) {
+                alert("You already opened today's surprise 💝");
                 return;
             }
 
+            // 🎁 open gift
             box.innerHTML = `<img src="images/${img}" width="120">`;
-            localStorage.setItem("chosenGift", img);
 
-            // lock other boxes
+            // save for today only
+            localStorage.setItem(todayKey, img);
+
+            // lock others
             let allBoxes = document.querySelectorAll("#surprises div");
-            allBoxes.forEach(b=>{
-                if(b !== box){
-                    b.style.opacity="0.3";
-                    b.style.pointerEvents="none";
+            allBoxes.forEach(b => {
+                if (b !== box) {
+                    b.style.opacity = "0.3";
+                    b.style.pointerEvents = "none";
                 }
             });
 
-            if(isValentine){
-                setTimeout(()=>proposalPopup.style.display="block",1500);
+            if (isValentine) {
+                setTimeout(() => {
+                    proposalPopup.style.display = "block";
+                }, 1500);
             }
         };
 
         surprises.appendChild(box);
     });
 }
+
 
 
 function closePopup(){ proposalPopup.style.display="none"; }
@@ -267,3 +277,4 @@ function rejectLove(){
 
 </body>
 </html>
+
